@@ -19,9 +19,3 @@ esp-idf component for lilygo's T-Deck
 
 
 
-
-
-- [x] Configurer le BUS I2C master
-- [x] Configurer un device qui sera notre clavier
-- [ ] API. Récupérer les frappes 
-- [ ] Profit
