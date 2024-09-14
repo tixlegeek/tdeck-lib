@@ -2,8 +2,8 @@
 #include <board.h>
 #include <display.h>
 #include <driver/spi_master.h>
-
 #include <st7789.h>
+
 const static char *TAG = "DISPLAY";
 
 esp_err_t td_display_init(void *ctx) {

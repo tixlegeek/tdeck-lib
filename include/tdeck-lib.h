@@ -4,6 +4,7 @@
 #include <board.h>
 #include <battery.h>
 #include <display.h>
+#include <keyboard.h>
 
 esp_err_t td_board_init(td_board_t **Board);
 

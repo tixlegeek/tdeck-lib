@@ -2,6 +2,7 @@
 #include <esp_err.h>
 #include <esp_log.h>
 #include <stdio.h>
+#include "driver/i2c_master.h"
 
 #include "tdeck-lib.h"
 
@@ -19,6 +20,17 @@ esp_err_t td_board_spi_init(td_board_t *Board){
   return spi_bus_initialize(BOARD_DISPLAY_HOST, &bus_config, SPI_DMA_CH_AUTO);
 }
 
+esp_err_t td_board_i2c_init(td_board_t *Board){
+  i2c_master_bus_config_t bus_config = {
+      .clk_source = I2C_CLK_SRC_DEFAULT,
+      .i2c_port = BOARD_I2C,
+      .scl_io_num = BOARD_I2C_SCL_PIN,
+      .sda_io_num = BOARD_I2C_SDA_PIN,
+      .glitch_ignore_cnt = 7,
+  };
+  return i2c_new_master_bus(&bus_config, &Board->proto.i2c.host);
+}
+
 esp_err_t td_board_init(td_board_t **Board) {
   *Board = (td_board_t *)malloc(sizeof(td_board_t));
   if(Board == NULL){
@@ -34,6 +46,8 @@ esp_err_t td_board_init(td_board_t **Board) {
   ESP_ERROR_CHECK(td_battery_init(*Board));
   ESP_ERROR_CHECK(td_board_spi_init(*Board));
   ESP_ERROR_CHECK(td_display_init(*Board));
+  ESP_ERROR_CHECK(td_board_i2c_init(*Board));
+  ESP_ERROR_CHECK(td_keyboard_init(*Board));
 
   return ESP_OK;
 }

@@ -1,18 +1,37 @@
 #ifndef _BOARD_H_
 #define _BOARD_H_
 
+#include "driver/i2c_master.h"
 #include <battery.h>
 #include <display.h>
+#include <keyboard.h>
 
 typedef struct td_board_t {
   td_battery_t Battery;
   td_display_t Display;
+  td_keyboard_t Keyboard;
+  struct {
+    struct {
+      i2c_master_bus_handle_t host;
+    } i2c;
+    struct {
+      i2c_master_bus_handle_t host;
+    } spi;
+  } proto;
 } td_board_t;
 
 #define BOARD_SPI_MISO_PIN 38
 #define BOARD_SPI_MOSI_PIN 41
 #define BOARD_SPI_SCK_PIN 40
 #define BOARD_SPI SPI2_HOST
+
+#define BOARD_I2C_SDA_PIN 18
+#define BOARD_I2C_SCL_PIN 8
+#define BOARD_I2C I2C_NUM_0
+
+#define BOARD_KEYBOARD_ADDR 0x55
+#define BOARD_KEYBOARD_SPEED 100000U
+#define BOARD_KEYBOARD_POLL_TIMEOUT 100
 #define BOARD_BAT_ADC_PIN 4
 #define BOARD_BAT_ADC_UNIT ADC_UNIT_1
 #define BOARD_BAT_ADC_CHANNEL ADC_CHANNEL_3
