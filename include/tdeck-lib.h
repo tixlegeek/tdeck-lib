@@ -5,6 +5,8 @@
 #include <battery.h>
 #include <display.h>
 #include <keyboard.h>
+#include <trackball.h>
+#include <speaker.h>
 
 esp_err_t td_board_init(td_board_t **Board);
 

@@ -10,7 +10,7 @@ esp-idf component for lilygo's T-Deck
 
 - [x] Keyboard
 - [ ] Touch
-- [ ] TrackBall
+- [x] TrackBall
 - [ ] SD Card
 - [ ] Microphone
 - [ ] Speaker

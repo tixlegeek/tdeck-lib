@@ -5,11 +5,16 @@
 #include <battery.h>
 #include <display.h>
 #include <keyboard.h>
+#include <trackball.h>
+#include <speaker.h>
 
 typedef struct td_board_t {
   td_battery_t Battery;
   td_display_t Display;
   td_keyboard_t Keyboard;
+  td_trackball_t Trackball;
+  td_speaker_t Speaker;
+
   struct {
     struct {
       i2c_master_bus_handle_t host;
@@ -40,6 +45,18 @@ typedef struct td_board_t {
 #define BOARD_EN_PIN 35
 #define BOARD_BAT_VOLTAGE_MIN 2.5 // 0% battery
 #define BOARD_BAT_VOLTAGE_MAX 4.2 // 100% battery
+
+#define BOARD_TRACKBALL_RIGHT_PIN 2
+#define BOARD_TRACKBALL_UP_PIN 3
+#define BOARD_TRACKBALL_LEFT_PIN 1
+#define BOARD_TRACKBALL_DOWN_PIN 15
+
+#define BOARD_TRACKBALL_PINSEL ((1ULL<<BOARD_TRACKBALL_UP_PIN)|(1ULL<<BOARD_TRACKBALL_DOWN_PIN)|(1ULL<<BOARD_TRACKBALL_LEFT_PIN)|(1ULL<<BOARD_TRACKBALL_RIGHT_PIN))
+
+#define BOARD_SPEAKER_BCLK_PIN        7      // I2S bit clock io number   I2S_BCLK
+#define BOARD_SPEAKER_WS_PIN          5      // I2S word select io number    I2S_LRC
+//#define BOARD_SPEAKER_DOUT_PIN        6     // I2S data out io number    I2S_DOUT
+#define BOARD_SPEAKER_DIN_PIN         6    // I2S data in io number
 
 #define BOARD_DISPLAY_CS_PIN 12
 #define BOARD_DISPLAY_BL_PIN 42

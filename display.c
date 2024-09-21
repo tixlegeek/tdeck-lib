@@ -74,7 +74,7 @@ esp_err_t td_display_init(void *ctx) {
           BOARD_DISPLAY_OFFSETX, BOARD_DISPLAY_OFFSETY);
   lcdBacklightOn(Board);
   lcdSetFontDirection(Board, 1);
-  lcdFillScreen(Board, CYAN);
+  lcdFillScreen(Board, BLACK);
   lcdDrawFinish(Board);
   return ESP_OK;
 }

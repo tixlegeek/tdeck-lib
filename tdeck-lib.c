@@ -3,7 +3,6 @@
 #include <esp_log.h>
 #include <stdio.h>
 #include "driver/i2c_master.h"
-
 #include "tdeck-lib.h"
 
 const static char *TAG = "TDECKLIB";
@@ -48,6 +47,9 @@ esp_err_t td_board_init(td_board_t **Board) {
   ESP_ERROR_CHECK(td_display_init(*Board));
   ESP_ERROR_CHECK(td_board_i2c_init(*Board));
   ESP_ERROR_CHECK(td_keyboard_init(*Board));
+  ESP_ERROR_CHECK(td_speaker_init(*Board));
+  gpio_install_isr_service(0);
+  ESP_ERROR_CHECK(td_trackball_init(*Board));
 
   return ESP_OK;
 }
