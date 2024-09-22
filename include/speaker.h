@@ -10,6 +10,7 @@
 #define SAMPLE_RATE 16000
 typedef struct td_speaker_t {
   i2s_chan_handle_t dev;
+  i2s_std_config_t *tx_cfg; // <<<< added this
 } td_speaker_t;
 
 esp_err_t td_speaker_init(void *ctx);

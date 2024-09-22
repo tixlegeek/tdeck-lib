@@ -48,6 +48,7 @@ esp_err_t td_board_init(td_board_t **Board) {
   ESP_ERROR_CHECK(td_board_i2c_init(*Board));
   ESP_ERROR_CHECK(td_keyboard_init(*Board));
   ESP_ERROR_CHECK(td_speaker_init(*Board));
+  ESP_ERROR_CHECK(td_sdcard_init(*Board));
   gpio_install_isr_service(0);
   ESP_ERROR_CHECK(td_trackball_init(*Board));
 

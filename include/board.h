@@ -30,6 +30,10 @@ typedef struct td_board_t {
 #define BOARD_SPI_SCK_PIN 40
 #define BOARD_SPI SPI2_HOST
 
+#define BOARD_SDCARD_CS_PIN 39
+
+#define BOARD_RADIO_CS_PIN 9
+
 #define BOARD_I2C_SDA_PIN 18
 #define BOARD_I2C_SCL_PIN 8
 #define BOARD_I2C I2C_NUM_0
