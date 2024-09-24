@@ -7,8 +7,21 @@
 const static char *TAG = "DISPLAY";
 
 esp_err_t td_display_init(void *ctx) {
-  td_board_t *Board = (td_board_t*)ctx;
-  td_display_t *Display = &Board->Display;
+  td_board_t *Board = (td_board_t *)ctx;
+
+  if (Board->Display != NULL) {
+    ESP_LOGW(TAG, "Already initialized");
+    return ESP_OK;
+  }
+
+  td_display_t *Display = NULL;
+
+  Display = malloc(sizeof(td_display_t));
+  if (Display == NULL) {
+    return ESP_ERR_NO_MEM;
+  }
+
+  Board->Display = Display;
 
   esp_err_t ret;
 
@@ -19,13 +32,11 @@ esp_err_t td_display_init(void *ctx) {
     gpio_set_level(BOARD_DISPLAY_CS_PIN, 0);
   }
 
-  // gpio_pad_select_gpio( BOARD_DISPLAY_DC_PIN );
   gpio_reset_pin(BOARD_DISPLAY_DC_PIN);
   gpio_set_direction(BOARD_DISPLAY_DC_PIN, GPIO_MODE_OUTPUT);
   gpio_set_level(BOARD_DISPLAY_DC_PIN, 0);
 
   if (BOARD_DISPLAY_RESET_PIN >= 0) {
-    // gpio_pad_select_gpio( BOARD_DISPLAY_RESET_PIN );
     gpio_reset_pin(BOARD_DISPLAY_RESET_PIN);
     gpio_set_direction(BOARD_DISPLAY_RESET_PIN, GPIO_MODE_OUTPUT);
     gpio_set_level(BOARD_DISPLAY_RESET_PIN, 1);
@@ -38,7 +49,6 @@ esp_err_t td_display_init(void *ctx) {
 
   ESP_LOGI(TAG, "BOARD_DISPLAY_BL_PIN=%d", BOARD_DISPLAY_BL_PIN);
   if (BOARD_DISPLAY_BL_PIN >= 0) {
-    // gpio_pad_select_gpio(BOARD_DISPLAY_BL_PIN);
     gpio_reset_pin(BOARD_DISPLAY_BL_PIN);
     gpio_set_direction(BOARD_DISPLAY_BL_PIN, GPIO_MODE_OUTPUT);
     gpio_set_level(BOARD_DISPLAY_BL_PIN, 0);
@@ -62,19 +72,24 @@ esp_err_t td_display_init(void *ctx) {
 
   spi_device_handle_t handle;
   ret = spi_bus_add_device(BOARD_SPI, &devcfg, &handle);
+
   if (ret != ESP_OK) {
     return ret;
   }
+
   ESP_LOGD(TAG, "spi_bus_add_device=%d", ret);
-  assert(ret == ESP_OK);
+
   Display->_dc = BOARD_DISPLAY_DC_PIN;
   Display->_bl = BOARD_DISPLAY_BL_PIN;
   Display->dev = handle;
+
   lcdInit(Board, BOARD_DISPLAY_WIDTH, BOARD_DISPLAY_HEIGHT,
           BOARD_DISPLAY_OFFSETX, BOARD_DISPLAY_OFFSETY);
+
   lcdBacklightOn(Board);
   lcdSetFontDirection(Board, 1);
   lcdFillScreen(Board, BLACK);
   lcdDrawFinish(Board);
+
   return ESP_OK;
 }

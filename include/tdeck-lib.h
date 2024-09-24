@@ -9,7 +9,7 @@
 #include <speaker.h>
 #include <sdcard.h>
 
-esp_err_t td_board_init(td_board_t **Board);
+esp_err_t td_board_init(td_board_t **Board, td_board_peripherals peripherals);
 
 #endif
 /* end of include guard:  _TDECK_LIB_H_ */

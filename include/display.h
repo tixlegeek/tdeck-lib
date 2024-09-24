@@ -11,6 +11,7 @@
 // HOST/BUS --> DEVICES
 
 typedef struct td_display_t {
+  bool initialized;
   spi_device_handle_t dev;
   uint16_t _width;
 	uint16_t _height;
@@ -25,6 +26,7 @@ typedef struct td_display_t {
 	int16_t _bl;
 	bool _use_frame_buffer;
 	uint16_t *_frame_buffer;
+  spi_host_device_t host;
 } td_display_t;
 
 esp_err_t td_display_init(void *ctx);

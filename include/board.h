@@ -7,21 +7,28 @@
 #include <keyboard.h>
 #include <trackball.h>
 #include <speaker.h>
+#include <sdcard.h>
+
+typedef enum {
+  INIT_SDCARD = 1,
+  INIT_DISPLAY = 2,
+  INIT_KEYBOARD = 4,
+  INIT_TRACKBALL = 8,
+  INIT_SPEAKER = 16,
+  INIT_BATTERY = 32,
+} td_board_peripherals;
 
 typedef struct td_board_t {
-  td_battery_t Battery;
-  td_display_t Display;
-  td_keyboard_t Keyboard;
-  td_trackball_t Trackball;
-  td_speaker_t Speaker;
-
+  td_battery_t *Battery;
+  td_display_t *Display;
+  td_keyboard_t *Keyboard;
+  td_trackball_t *Trackball;
+  td_speaker_t *Speaker;
+  td_sdcard_t *SDCard;
   struct {
     struct {
       i2c_master_bus_handle_t host;
     } i2c;
-    struct {
-      i2c_master_bus_handle_t host;
-    } spi;
   } proto;
 } td_board_t;
 
@@ -31,6 +38,8 @@ typedef struct td_board_t {
 #define BOARD_SPI SPI2_HOST
 
 #define BOARD_SDCARD_CS_PIN 39
+#define BOARD_SDCARD_MOUNT_POINT "/sdcard"
+#define BOARD_SDCARD_CLOCK_SPEED 50000
 
 #define BOARD_RADIO_CS_PIN 9
 
@@ -61,13 +70,14 @@ typedef struct td_board_t {
 #define BOARD_SPEAKER_WS_PIN          5      // I2S word select io number    I2S_LRC
 //#define BOARD_SPEAKER_DOUT_PIN        6     // I2S data out io number    I2S_DOUT
 #define BOARD_SPEAKER_DIN_PIN         6    // I2S data in io number
+#define BOARD_SPEAKER_I2S_NUM I2S_NUM_0
+#define BOARD_SPEAKER_DEFAULT_SAMPLERATE SAMPLE_RATE_16K
 
 #define BOARD_DISPLAY_CS_PIN 12
 #define BOARD_DISPLAY_BL_PIN 42
 #define BOARD_DISPLAY_DC_PIN 11
 #define BOARD_DISPLAY_RESET_PIN -1
 #define BOARD_DISPLAY_SPEED_HZ SPI_MASTER_FREQ_80M;
-#define BOARD_DISPLAY_HOST BOARD_SPI
 #define BOARD_DISPLAY_WIDTH 240
 #define BOARD_DISPLAY_HEIGHT 320
 #define BOARD_DISPLAY_OFFSETX 0

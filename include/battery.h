@@ -17,6 +17,8 @@ typedef enum {
 } td_battery_state_t;
 
 typedef struct td_battery_t {
+  bool initialized;
+  bool calibrated;
   adc_oneshot_unit_handle_t dev;
   adc_cali_handle_t cal;
   float voltage;

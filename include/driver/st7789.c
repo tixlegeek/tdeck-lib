@@ -40,7 +40,7 @@ bool td_display_write_byte(spi_device_handle_t SPIHandle, const uint8_t *Data,
 
 bool td_display_write_command(td_board_t *Board, uint8_t cmd) {
   assert(Board);
-  td_display_t *Display = &Board->Display;
+  td_display_t *Display = Board->Display;
   static uint8_t Byte = 0;
   Byte = cmd;
   gpio_set_level(Display->_dc, SPI_Command_Mode);
@@ -49,7 +49,7 @@ bool td_display_write_command(td_board_t *Board, uint8_t cmd) {
 
 bool td_display_write_data_byte(td_board_t *Board, uint8_t data) {
   assert(Board);
-  td_display_t *Display = &Board->Display;
+  td_display_t *Display = Board->Display;
   static uint8_t Byte = 0;
   Byte = data;
   gpio_set_level(Display->_dc, SPI_Data_Mode);
@@ -58,7 +58,7 @@ bool td_display_write_data_byte(td_board_t *Board, uint8_t data) {
 
 bool td_display_write_data_word(td_board_t *Board, uint16_t data) {
   assert(Board);
-  td_display_t *Display = &Board->Display;
+  td_display_t *Display = Board->Display;
   static uint8_t Byte[2];
   Byte[0] = (data >> 8) & 0xFF;
   Byte[1] = data & 0xFF;
@@ -68,7 +68,7 @@ bool td_display_write_data_word(td_board_t *Board, uint16_t data) {
 
 bool td_display_write_addr(td_board_t *Board, uint16_t addr1, uint16_t addr2) {
   assert(Board);
-  td_display_t *Display = &Board->Display;
+  td_display_t *Display = Board->Display;
   static uint8_t Byte[4];
   Byte[0] = (addr1 >> 8) & 0xFF;
   Byte[1] = addr1 & 0xFF;
@@ -80,7 +80,7 @@ bool td_display_write_addr(td_board_t *Board, uint16_t addr1, uint16_t addr2) {
 
 bool td_display_write_color(td_board_t *Board, uint16_t color, uint16_t size) {
   assert(Board);
-  td_display_t *Display = &Board->Display;
+  td_display_t *Display = Board->Display;
   static uint8_t Byte[1024];
   int index = 0;
   for (int i = 0; i < size; i++) {
@@ -94,7 +94,7 @@ bool td_display_write_color(td_board_t *Board, uint16_t color, uint16_t size) {
 // Add 202001
 bool td_display_write_colors(td_board_t *Board, uint16_t *colors, uint16_t size) {
   assert(Board);
-  td_display_t *Display = &Board->Display;
+  td_display_t *Display = Board->Display;
   static uint8_t Byte[1024];
   int index = 0;
   for (int i = 0; i < size; i++) {
@@ -116,7 +116,7 @@ void delayMS(int ms) {
 
 void lcdInit(td_board_t *Board, int width, int height, int offsetx, int offsety) {
   assert(Board);
-  td_display_t *Display = &Board->Display;
+  td_display_t *Display = Board->Display;
   Display->_width = width;
   Display->_height = height;
   Display->_offsetx = offsetx;
@@ -179,7 +179,7 @@ void lcdInit(td_board_t *Board, int width, int height, int offsetx, int offsety)
 // color:color
 void lcdDrawPixel(td_board_t *Board, uint16_t x, uint16_t y, uint16_t color) {
   assert(Board);
-  td_display_t *Display = &Board->Display;
+  td_display_t *Display = Board->Display;
   if (x >= Display->_width)
     return;
   if (y >= Display->_height)
@@ -209,7 +209,7 @@ void lcdDrawPixel(td_board_t *Board, uint16_t x, uint16_t y, uint16_t color) {
 void lcdDrawMultiPixels(td_board_t *Board, uint16_t x, uint16_t y, uint16_t size,
                         uint16_t *colors) {
   assert(Board);
-  td_display_t *Display = &Board->Display;
+  td_display_t *Display = Board->Display;
   if (x + size > Display->_width)
     return;
   if (y >= Display->_height)
@@ -250,7 +250,7 @@ void lcdDrawMultiPixels(td_board_t *Board, uint16_t x, uint16_t y, uint16_t size
 void lcdDrawFillRect(td_board_t *Board, uint16_t x1, uint16_t y1, uint16_t x2,
                      uint16_t y2, uint16_t color) {
   assert(Board);
-  td_display_t *Display = &Board->Display;
+  td_display_t *Display = Board->Display;
   if (x1 >= Display->_width)
     return;
   if (x2 >= Display->_width)
@@ -321,7 +321,7 @@ void lcdDisplayOn(td_board_t *Board) {
 // color:color
 void lcdFillScreen(td_board_t *Board, uint16_t color) {
   assert(Board);
-  td_display_t *Display = &Board->Display;
+  td_display_t *Display = Board->Display;
   lcdDrawFillRect(Board, 0, 0, Display->_width - 1, Display->_height - 1,
                   color);
 }
@@ -705,7 +705,7 @@ void lcdDrawFillArrow(td_board_t *Board, uint16_t x0, uint16_t y0, uint16_t x1,
 int lcdDrawChar(td_board_t *Board, FontxFile *fxs, uint16_t x, uint16_t y,
                 uint8_t ascii, uint16_t color) {
   assert(Board);
-  td_display_t *Display = &Board->Display;
+  td_display_t *Display = Board->Display;
   uint16_t xx, yy, bit, ofs;
   unsigned char fonts[128]; // font pattern
   unsigned char pw, ph;
@@ -848,7 +848,7 @@ int lcdDrawChar(td_board_t *Board, FontxFile *fxs, uint16_t x, uint16_t y,
 int lcdDrawString(td_board_t *Board, FontxFile *fx, uint16_t x, uint16_t y,
                   uint8_t *ascii, uint16_t color) {
   assert(Board);
-  td_display_t *Display = &Board->Display;
+  td_display_t *Display = Board->Display;
   int length = strlen((char *)ascii);
   if (_DEBUG_)
     printf("lcdDrawString length=%d\n", length);
@@ -883,7 +883,7 @@ int lcdDrawString(td_board_t *Board, FontxFile *fx, uint16_t x, uint16_t y,
 int lcdDrawCode(td_board_t *Board, FontxFile *fx, uint16_t x, uint16_t y,
                 uint8_t code, uint16_t color) {
   assert(Board);
-  td_display_t *Display = &Board->Display;
+  td_display_t *Display = Board->Display;
   if (_DEBUG_)
     printf("code=%x x=%d y=%d\n", code, x, y);
   if (Display->_font_direction == 0)
@@ -926,7 +926,7 @@ int lcdDrawUTF8Char(td_board_t *Board, FontxFile *fx, uint16_t x,uint16_t y,uint
 // color:color
 int lcdDrawUTF8String(td_board_t *Board, FontxFile *fx, uint16_t x, uint16_t y, unsigned char *utfs, uint16_t color) {
 	assert(Board);
-td_display_t *Display = &Board->Display;
+ td_display_t *Display = Board->Display;
 
 	int i;
 	int spos;
@@ -956,7 +956,7 @@ td_display_t *Display = &Board->Display;
 // dir:Direction
 void lcdSetFontDirection(td_board_t *Board, uint16_t dir) {
   assert(Board);
-  td_display_t *Display = &Board->Display;
+  td_display_t *Display = Board->Display;
   Display->_font_direction = dir;
 }
 
@@ -964,7 +964,7 @@ void lcdSetFontDirection(td_board_t *Board, uint16_t dir) {
 // color:fill color
 void lcdSetFontFill(td_board_t *Board, uint16_t color) {
   assert(Board);
-  td_display_t *Display = &Board->Display;
+  td_display_t *Display = Board->Display;
   Display->_font_fill = true;
   Display->_font_fill_color = color;
 }
@@ -972,7 +972,7 @@ void lcdSetFontFill(td_board_t *Board, uint16_t color) {
 // UnSet font filling
 void lcdUnsetFontFill(td_board_t *Board) {
   assert(Board);
-  td_display_t *Display = &Board->Display;
+  td_display_t *Display = Board->Display;
   Display->_font_fill = false;
 }
 
@@ -980,7 +980,7 @@ void lcdUnsetFontFill(td_board_t *Board) {
 // color:frame color
 void lcdSetFontUnderLine(td_board_t *Board, uint16_t color) {
   assert(Board);
-  td_display_t *Display = &Board->Display;
+  td_display_t *Display = Board->Display;
   Display->_font_underline = true;
   Display->_font_underline_color = color;
 }
@@ -988,14 +988,14 @@ void lcdSetFontUnderLine(td_board_t *Board, uint16_t color) {
 // UnSet font underline
 void lcdUnsetFontUnderLine(td_board_t *Board) {
   assert(Board);
-  td_display_t *Display = &Board->Display;
+  td_display_t *Display = Board->Display;
   Display->_font_underline = false;
 }
 
 // Backlight OFF
 void lcdBacklightOff(td_board_t *Board) {
   assert(Board);
-  td_display_t *Display = &Board->Display;
+  td_display_t *Display = Board->Display;
   if (Display->_bl >= 0) {
     gpio_set_level(Display->_bl, 0);
   }
@@ -1004,7 +1004,7 @@ void lcdBacklightOff(td_board_t *Board) {
 // Backlight ON
 void lcdBacklightOn(td_board_t *Board) {
   assert(Board);
-  td_display_t *Display = &Board->Display;
+  td_display_t *Display = Board->Display;
   if (Display->_bl >= 0) {
     gpio_set_level(Display->_bl, 1);
   }
@@ -1024,7 +1024,7 @@ void lcdInversionOn(td_board_t *Board) {
 
 void lcdWrapArround(td_board_t *Board, SCROLL_TYPE_t scroll, int start, int end) {
   assert(Board);
-  td_display_t *Display = &Board->Display;
+  td_display_t *Display = Board->Display;
   if (Display->_use_frame_buffer == false)
     return;
 
@@ -1089,7 +1089,7 @@ void lcdWrapArround(td_board_t *Board, SCROLL_TYPE_t scroll, int start, int end)
 void lcdInversionArea(td_board_t *Board, uint16_t x1, uint16_t y1, uint16_t x2,
                       uint16_t y2, uint16_t *save) {
   assert(Board);
-  td_display_t *Display = &Board->Display;
+  td_display_t *Display = Board->Display;
   if (x1 >= Display->_width)
     return;
   if (x2 >= Display->_width)
@@ -1125,7 +1125,7 @@ void lcdInversionArea(td_board_t *Board, uint16_t x1, uint16_t y1, uint16_t x2,
 void lcdGetRect(td_board_t *Board, uint16_t x1, uint16_t y1, uint16_t x2,
                 uint16_t y2, uint16_t *save) {
   assert(Board);
-  td_display_t *Display = &Board->Display;
+  td_display_t *Display = Board->Display;
   if (x1 >= Display->_width)
     return;
   if (x2 >= Display->_width)
@@ -1158,7 +1158,7 @@ void lcdGetRect(td_board_t *Board, uint16_t x1, uint16_t y1, uint16_t x2,
 void lcdSetRect(td_board_t *Board, uint16_t x1, uint16_t y1, uint16_t x2,
                 uint16_t y2, uint16_t *save) {
   assert(Board);
-  td_display_t *Display = &Board->Display;
+  td_display_t *Display = Board->Display;
   if (x1 >= Display->_width)
     return;
   if (x2 >= Display->_width)
@@ -1204,7 +1204,7 @@ void lcdResetCursor(td_board_t *Board, uint16_t x0, uint16_t y0, uint16_t r,
 // Draw Frame Buffer
 void lcdDrawFinish(td_board_t *Board) {
   assert(Board);
-  td_display_t *Display = &Board->Display;
+  td_display_t *Display = Board->Display;
   if (Display->_use_frame_buffer == false)
     return;
 

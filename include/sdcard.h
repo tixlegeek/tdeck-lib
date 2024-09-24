@@ -4,27 +4,26 @@
 #include <string.h>
 #include <sys/unistd.h>
 #include <sys/stat.h>
-#include "esp_vfs_fat.h"
-#include "sdmmc_cmd.h"
-#include "driver/sdmmc_host.h"
+#include <esp_vfs_fat.h>
+#include <sdmmc_cmd.h>
+#include <driver/sdmmc_host.h>
+#include <utils.h>
 
 #include <dirent.h>
 
-typedef struct td_mountdata_t {
-    const char* mount_point;
+typedef struct td_sdcard_t {
+    bool initialized;
+    const char mount_point[STR_SIZE_MEDIUM];
+    spi_device_handle_t dev;
     sdmmc_card_t* card;
-} td_mountdata_t;
+    bool mounted;
+} td_sdcard_t;
 
+esp_err_t td_sdcard_init(void *ctx, const char *mount_point);
+esp_err_t sdcard_mount(void *ctx, const char *mount_point);
+esp_err_t sdcard_unmount(void *ctx);
+esp_err_t sdcard_is_mounted(void *ctx);
 
-#define SDCARD_MOUNT_POINT "/sdcard"
-
-bool sdcard_init();
-void* sdcard_mount(const char* mount_point);
-void* sdcard_init_and_mount(const char* mount_point);
-void sdcard_unmount(void* context);
-bool sdcard_is_mounted(void* context);
-
-esp_err_t td_sdcard_init(void *ctx);
 
 
 #endif

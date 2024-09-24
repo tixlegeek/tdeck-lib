@@ -5,6 +5,21 @@ const static char *TAG = "KEYBOARD";
 
 esp_err_t td_keyboard_init(void *ctx) {
   td_board_t *Board = (td_board_t *)ctx;
+  ESP_LOGI(TAG, "Initializing...");
+
+  if (Board->Keyboard != NULL) {
+    ESP_LOGW(TAG, "Already initialized");
+    return ESP_OK;
+  }
+
+  td_keyboard_t *Keyboard = NULL;
+  Keyboard = malloc(sizeof(td_keyboard_t));
+  if (Keyboard == NULL) {
+    return ESP_ERR_NO_MEM;
+  }
+
+  Board->Keyboard = Keyboard;
+
   i2c_device_config_t device_config = {
       .scl_speed_hz = BOARD_KEYBOARD_SPEED,
       .device_address = BOARD_KEYBOARD_ADDR,
@@ -15,15 +30,25 @@ esp_err_t td_keyboard_init(void *ctx) {
               .disable_ack_check = 0,
           },
   };
-  return i2c_master_bus_add_device(Board->proto.i2c.host, &device_config,
-                                   &Board->Keyboard.dev);
+  esp_err_t err = i2c_master_bus_add_device(Board->proto.i2c.host,
+                                            &device_config, &Keyboard->dev);
+  if (err == ESP_OK) {
+    Keyboard->initialized = true;
+  }
+  return err;
 }
 
 esp_err_t td_keyboard_poll(void *ctx, uint8_t *c) {
   td_board_t *Board = (td_board_t *)ctx;
+  td_keyboard_t *Keyboard = Board->Keyboard;
+
+  if (!Keyboard->initialized) {
+    return ESP_ERR_INVALID_STATE;
+  }
+
   uint8_t key = 0;
-  esp_err_t err = i2c_master_receive(Board->Keyboard.dev, &key, 1,
-                                     BOARD_KEYBOARD_POLL_TIMEOUT);
+  esp_err_t err =
+      i2c_master_receive(Keyboard->dev, &key, 1, BOARD_KEYBOARD_POLL_TIMEOUT);
   if (err == ESP_OK && key != '\0') {
     *c = key;
     return ESP_OK;

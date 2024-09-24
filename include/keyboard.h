@@ -6,6 +6,7 @@
 #include "esp_err.h"
 
 typedef struct td_keyboard_t {
+  bool initialized;
   i2c_master_dev_handle_t dev;
 } td_keyboard_t;
 
