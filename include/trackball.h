@@ -7,17 +7,15 @@
 #include <freertos/FreeRTOS.h>
 #include <freertos/queue.h>
 
-extern QueueHandle_t td_trackball_queue;
-
 typedef enum {
-  EVT_TRACKBALL_UP,
+  EVT_TRACKBALL_UP = 0,
   EVT_TRACKBALL_DOWN,
   EVT_TRACKBALL_LEFT,
   EVT_TRACKBALL_RIGHT,
 } td_trackball_evt_t ;
 
 typedef struct td_trackball_t {
-  void *test;
+  QueueHandle_t  *queue;
 } td_trackball_t;
 
 

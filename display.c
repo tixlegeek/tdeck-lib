@@ -7,14 +7,14 @@
 const static char *TAG = "DISPLAY";
 
 esp_err_t td_display_init(void *ctx) {
+  assert(ctx!=NULL);
   td_board_t *Board = (td_board_t *)ctx;
+  td_display_t *Display = Board->Display;
 
-  if (Board->Display != NULL) {
+  if (Display != NULL) {
     ESP_LOGW(TAG, "Already initialized");
     return ESP_OK;
   }
-
-  td_display_t *Display = NULL;
 
   Display = malloc(sizeof(td_display_t));
   if (Display == NULL) {

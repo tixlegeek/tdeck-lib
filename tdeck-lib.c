@@ -8,6 +8,7 @@
 const static char *TAG = "TDECKLIB";
 
 esp_err_t td_board_spi_init(td_board_t *Board) {
+  UNUSED(Board);
   spi_bus_config_t bus_config = {
       .miso_io_num = BOARD_SPI_MISO_PIN,
       .mosi_io_num = BOARD_SPI_MOSI_PIN,
@@ -20,6 +21,7 @@ esp_err_t td_board_spi_init(td_board_t *Board) {
 }
 
 esp_err_t td_board_i2c_init(td_board_t *Board) {
+  assert(Board!=NULL);
   i2c_master_bus_config_t bus_config = {
       .clk_source = I2C_CLK_SRC_DEFAULT,
       .i2c_port = BOARD_I2C,
@@ -61,18 +63,20 @@ esp_err_t td_board_init(td_board_t **Board, td_board_peripherals peripherals) {
 
   ESP_ERROR_CHECK(td_board_i2c_init(*Board));
   ESP_ERROR_CHECK(td_board_spi_init(*Board));
+  gpio_install_isr_service(0);
 
   if (peripherals & INIT_BATTERY) {
     err = td_battery_init(*Board);
     if(err != ESP_OK){
+            ESP_LOGE(TAG, "Battery initialisation error: %s", esp_err_to_name(err));
       return ESP_FAIL;
     }
   }
 
-
   if (peripherals & INIT_DISPLAY) {
     err = td_display_init(*Board);
     if(err != ESP_OK){
+            ESP_LOGE(TAG, "Display initialisation error: %s", esp_err_to_name(err));
       return ESP_FAIL;
     }
   }
@@ -80,6 +84,7 @@ esp_err_t td_board_init(td_board_t **Board, td_board_peripherals peripherals) {
   if (peripherals & INIT_SDCARD) {
     err = td_sdcard_init(*Board, BOARD_SDCARD_MOUNT_POINT);
     if(err != ESP_OK){
+      ESP_LOGE(TAG, "SDCard initialisation error: %s", esp_err_to_name(err));
       return ESP_FAIL;
     }
       err = sdcard_mount(*Board, BOARD_SDCARD_MOUNT_POINT);
@@ -95,6 +100,7 @@ esp_err_t td_board_init(td_board_t **Board, td_board_peripherals peripherals) {
   if (peripherals & INIT_KEYBOARD) {
     err = td_keyboard_init(*Board);
     if(err != ESP_OK){
+      ESP_LOGE(TAG, "Keyboard initialisation error: %s", esp_err_to_name(err));
       return ESP_FAIL;
     }
   }
@@ -102,6 +108,7 @@ esp_err_t td_board_init(td_board_t **Board, td_board_peripherals peripherals) {
   if (peripherals & INIT_SPEAKER) {
     err = td_speaker_init(*Board);
     if(err != ESP_OK){
+      ESP_LOGE(TAG, "Speaker initialisation error: %s", esp_err_to_name(err));
       return ESP_FAIL;
     }
   }
@@ -109,9 +116,9 @@ esp_err_t td_board_init(td_board_t **Board, td_board_peripherals peripherals) {
   if (peripherals & INIT_TRACKBALL) {
     err = td_trackball_init(*Board);
     if(err != ESP_OK){
+      ESP_LOGE(TAG, "Trackball initialisation error: %s", esp_err_to_name(err));
       return ESP_FAIL;
     }
-    gpio_install_isr_service(0);
   }
 
   return ESP_OK;

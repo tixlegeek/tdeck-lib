@@ -4,15 +4,17 @@
 const static char *TAG = "KEYBOARD";
 
 esp_err_t td_keyboard_init(void *ctx) {
+  assert(ctx!=NULL);
   td_board_t *Board = (td_board_t *)ctx;
+  td_keyboard_t *Keyboard = Board->Keyboard;
+
   ESP_LOGI(TAG, "Initializing...");
 
-  if (Board->Keyboard != NULL) {
+  if (Keyboard != NULL) {
     ESP_LOGW(TAG, "Already initialized");
     return ESP_OK;
   }
 
-  td_keyboard_t *Keyboard = NULL;
   Keyboard = malloc(sizeof(td_keyboard_t));
   if (Keyboard == NULL) {
     return ESP_ERR_NO_MEM;
@@ -39,10 +41,11 @@ esp_err_t td_keyboard_init(void *ctx) {
 }
 
 esp_err_t td_keyboard_poll(void *ctx, uint8_t *c) {
+  assert(ctx!=NULL);
   td_board_t *Board = (td_board_t *)ctx;
   td_keyboard_t *Keyboard = Board->Keyboard;
 
-  if (!Keyboard->initialized) {
+  if(Keyboard == NULL){
     return ESP_ERR_INVALID_STATE;
   }
 

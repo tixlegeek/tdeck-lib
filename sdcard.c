@@ -15,15 +15,16 @@
  * @return success result
  */
 esp_err_t td_sdcard_init(void *ctx, const char *mount_point) {
+  assert(ctx!=NULL);
   td_board_t *Board = (td_board_t *)ctx;
+  td_sdcard_t *SDCard = Board->SDCard;
+
   ESP_LOGI(TAG, "Initializing...");
 
-  if (Board->SDCard != NULL) {
+  if (SDCard != NULL) {
     ESP_LOGW(TAG, "Already initialized");
     return ESP_OK;
   }
-
-  td_sdcard_t *SDCard = NULL;
 
   SDCard = malloc(sizeof(td_sdcard_t));
   if (SDCard == NULL) {
@@ -55,12 +56,13 @@ esp_err_t td_sdcard_init(void *ctx, const char *mount_point) {
 }
 
 esp_err_t sdcard_mount(void *ctx, const char *mount_point) {
+  assert(ctx!=NULL);
   td_board_t *Board = (td_board_t *)ctx;
   td_sdcard_t *SDCard = Board->SDCard;
 
   if (SDCard == NULL) {
-    ESP_LOGW(TAG, "Could not mount");
-    return ESP_FAIL;
+    ESP_LOGE(TAG, "Could not mount");
+    return ESP_ERR_INVALID_STATE;
   }
 
   esp_err_t err = ESP_OK;
@@ -92,7 +94,7 @@ esp_err_t sdcard_mount(void *ctx, const char *mount_point) {
 }
 
 esp_err_t sdcard_unmount(void *ctx) {
-
+  assert(ctx!=NULL);
   td_board_t *Board = (td_board_t *)ctx;
   td_sdcard_t *SDCard = Board->SDCard;
 

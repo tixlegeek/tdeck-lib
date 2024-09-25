@@ -1,6 +1,7 @@
 #ifndef _UTILS_H_
 #define _UTILS_H_
 
+#define UNUSED(x) (void)(x)
 #define STR_SIZE_TINY 32
 #define STR_SIZE_MEDIUM 64
 #define STR_SIZE_LARGE 256

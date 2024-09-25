@@ -4,7 +4,9 @@
 const static char *TAG = "SPEAKER";
 
 esp_err_t td_speaker_init(void *ctx) {
+  assert(ctx!=NULL);
   td_board_t *Board = (td_board_t *)ctx;
+  td_speaker_t *Speaker = Board->Speaker;
   ESP_LOGI(TAG, "Initializing...");
 
   if (Board->Speaker != NULL) {
@@ -12,7 +14,6 @@ esp_err_t td_speaker_init(void *ctx) {
     return ESP_OK;
   }
 
-  td_speaker_t *Speaker = NULL;
   Speaker = malloc(sizeof(td_speaker_t));
   if (Speaker == NULL) {
     return ESP_ERR_NO_MEM;
@@ -27,10 +28,11 @@ esp_err_t td_speaker_init(void *ctx) {
 }
 
 esp_err_t td_speaker_configure(void *ctx, uint32_t sample_rate) {
+  assert(ctx!=NULL);
   td_board_t *Board = (td_board_t *)ctx;
   td_speaker_t *Speaker = Board->Speaker;
 
-  if (!Speaker->initialized) {
+  if (Speaker==NULL) {
     return ESP_ERR_INVALID_STATE;
   }
 
@@ -59,6 +61,7 @@ esp_err_t td_speaker_configure(void *ctx, uint32_t sample_rate) {
 }
 
 void td_speaker_task(void *ctx) {
+  assert(ctx!=NULL);
   td_board_t *Board = (td_board_t *)ctx;
 
   while (1) {
