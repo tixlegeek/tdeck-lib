@@ -2,7 +2,7 @@
 #include <trackball.h>
 
 const static char *TAG = "TRACKBALL";
-static EventGroupHandle_t td_trackball_evtgroup = NULL;
+static EventGroupHandle_t td_trackball_evtgroup;
 
 static char *td_trackball_evt_str[] = {
     "EVT_UP",
@@ -12,18 +12,17 @@ static char *td_trackball_evt_str[] = {
 };
 
 static void IRAM_ATTR td_trackball_int(void *_evt) {
-  td_trackball_evt_t evt = (td_trackball_evt_t)_evt;
-  BaseType_t xHigherPriorityTaskWoken = pdFALSE;
-  ESP_DRAM_LOGI(TAG, "ISR Triggered! Event: %d", (int)_evt);
+    uint8_t evt = (uint8_t)_evt;
+    BaseType_t xHigherPriorityTaskWoken = pdFALSE;
 
-  xEventGroupSetBitsFromISR(td_trackball_evtgroup, evt,
-                            &xHigherPriorityTaskWoken);
-  /*if (xHigherPriorityTaskWoken == pdTRUE) {
-    portYIELD_FROM_ISR();
-  }*/
+    xEventGroupSetBitsFromISR(td_trackball_evtgroup, evt, &xHigherPriorityTaskWoken);
+
+    if (xHigherPriorityTaskWoken == pdTRUE) {
+        portYIELD_FROM_ISR(); // Yield if a higher priority task needs to run
+    }
 }
 
-char *td_trackball_evt2str(td_trackball_evt_t evt) {
+char *td_trackball_evt2str(uint8_t evt) {
   UNUSED(evt);
   return td_trackball_evt_str[0];
 }
@@ -31,30 +30,39 @@ char *td_trackball_evt2str(td_trackball_evt_t evt) {
 void td_trackball_task(void *ctx) {
   assert(ctx != NULL);
   td_board_t *Board = (td_board_t *)ctx;
-
+  td_trackball_t *Trackball = Board->Trackball;
+    UBaseType_t uxHighWaterMark;
+  if (Trackball == NULL) {
+    vTaskDelete(NULL);
+  }
+  EventBits_t evtbits = NULL;
   while (1) {
-    EventBits_t evtbits = xEventGroupWaitBits(
+    vTaskDelay(pdMS_TO_TICKS(10));
+    evtbits = xEventGroupWaitBits(
         td_trackball_evtgroup,
         EVT_TRACKBALL_UP | EVT_TRACKBALL_DOWN | EVT_TRACKBALL_LEFT |
             EVT_TRACKBALL_RIGHT, // The bits to wait for
-        pdTRUE,                  // Clear bits on exit
+        pdFALSE,                  // Clear bits on exit
         pdFALSE,                 // Wait for both bits
         portMAX_DELAY            // Wait indefinitely
     );
     // Attente des données dans la queue
     if (evtbits & EVT_TRACKBALL_UP) {
-      ESP_LOGI(TAG, "EVT_UP");
+      printf("EVT_UP %d\n", uxTaskGetStackHighWaterMark( NULL ));
+      xEventGroupClearBits(td_trackball_evtgroup, EVT_TRACKBALL_UP);
     }
     if (evtbits & EVT_TRACKBALL_DOWN) {
-      ESP_LOGI(TAG, "EVT_DOWN");
+      printf("EVT_DOWN %d\n", uxTaskGetStackHighWaterMark( NULL ));
+      xEventGroupClearBits(td_trackball_evtgroup, EVT_TRACKBALL_DOWN);
     }
     if (evtbits & EVT_TRACKBALL_LEFT) {
-      ESP_LOGI(TAG, "EVT_LEFT");
+      printf("EVT_LEFT %d\n", uxTaskGetStackHighWaterMark( NULL ));
+      xEventGroupClearBits(td_trackball_evtgroup, EVT_TRACKBALL_LEFT);
     }
     if (evtbits & EVT_TRACKBALL_RIGHT) {
-      ESP_LOGI(TAG, "EVT_RIGHT");
+      printf("EVT_RIGHT %d\n", uxTaskGetStackHighWaterMark( NULL ));
+      xEventGroupClearBits(td_trackball_evtgroup, EVT_TRACKBALL_RIGHT);
     }
-    vTaskDelay(pdMS_TO_TICKS(1));
   }
   vTaskDelete(NULL);
 }
