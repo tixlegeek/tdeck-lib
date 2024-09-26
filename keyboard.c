@@ -56,5 +56,5 @@ esp_err_t td_keyboard_poll(void *ctx, uint8_t *c) {
     *c = key;
     return ESP_OK;
   }
-  return ESP_ERR_TIMEOUT;
+  return ESP_FAIL;
 }
