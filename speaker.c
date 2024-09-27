@@ -63,7 +63,7 @@ esp_err_t td_speaker_configure(void *ctx, uint32_t sample_rate) {
 void td_speaker_task(void *ctx) {
   assert(ctx!=NULL);
   td_board_t *Board = (td_board_t *)ctx;
-
+  UNUSED(Board);
   while (1) {
     vTaskDelay(100 / portTICK_PERIOD_MS);
   }

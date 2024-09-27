@@ -113,7 +113,10 @@ void delayMS(int ms) {
            ms, _ms, portTICK_PERIOD_MS, xTicksToDelay);
   vTaskDelay(xTicksToDelay);
 }
-
+#define ST7789_MADCTL_BGR	BIT(3)
+#define ST7789_MADCTL_MV	BIT(5)
+#define ST7789_MADCTL_MX	BIT(6)
+#define ST7789_MADCTL_MY	BIT(7)
 void lcdInit(td_board_t *Board, int width, int height, int offsetx, int offsety) {
   assert(Board);
   td_display_t *Display = Board->Display;
@@ -136,7 +139,7 @@ void lcdInit(td_board_t *Board, int width, int height, int offsetx, int offsety)
   delayMS(10);
 
   td_display_write_command(Board, 0x36); // Memory Data Access Control
-  td_display_write_data_byte(Board, 0x00);
+  td_display_write_data_byte(Board, ST7789_MADCTL_MX | ST7789_MADCTL_MV);
 
   td_display_write_command(Board, 0x2A); // Column Address Set
   td_display_write_data_byte(Board, 0x00);
@@ -169,7 +172,7 @@ void lcdInit(td_board_t *Board, int width, int height, int offsetx, int offsety)
     ESP_LOGE(TAG, "heap_caps_malloc fail");
   } else {
     ESP_LOGI(TAG, "heap_caps_malloc success");
-    Display->_use_frame_buffer = true;
+    Display->_use_frame_buffer = false;
   }
 }
 

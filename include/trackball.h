@@ -18,7 +18,9 @@ typedef struct td_trackball_t {
   void *test;
 } td_trackball_t;
 
-static void IRAM_ATTR td_trackball_int(void *_evt);
+typedef void(*td_trackball_cb)(void*ctx, int dirx, int diry);
+
+void td_trackball_set_cb(td_trackball_cb cb);
 char *td_trackball_evt2str(uint8_t evt);
 void td_trackball_task(void *ctx);
 esp_err_t td_trackball_init(void *ctx);

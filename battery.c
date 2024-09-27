@@ -94,6 +94,7 @@ float td_battery_read(void *ctx) {
 
 uint8_t td_battery_voltage2percent(void *ctx, float voltage) {
   td_board_t *Board = (td_board_t *)ctx;
+  UNUSED(Board);
   if (voltage <= BOARD_BAT_VOLTAGE_MIN) {
     return 0; // Battery is 0%
   } else if (voltage >= BOARD_BAT_VOLTAGE_MAX) {
