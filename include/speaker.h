@@ -19,7 +19,6 @@
 #define SAMPLE_RATE_22K     22000 // AM radio broadcast quality
 
 
-
 typedef struct td_speaker_t {
   bool initialized;
   i2s_chan_handle_t dev;
@@ -28,4 +27,6 @@ typedef struct td_speaker_t {
 
 esp_err_t td_speaker_init(void *ctx);
 esp_err_t td_speaker_configure(void *ctx, uint32_t sample_rate);
+esp_err_t td_speaker_reconfig_clk(void *ctx, uint32_t rate, uint32_t bits_cfg, i2s_slot_mode_t ch);
+
 #endif /* end of include guard: _SPEAKER_H_ */
