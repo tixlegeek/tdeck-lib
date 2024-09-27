@@ -1,6 +1,7 @@
 #include "tdeck-lib.h"
 #include "driver/i2c_master.h"
 #include <driver/gpio.h>
+#include <esp_psram.h>
 #include <esp_err.h>
 #include <esp_log.h>
 #include <stdio.h>
@@ -46,11 +47,14 @@ esp_err_t td_board_init(td_board_t **Board, td_board_peripherals peripherals) {
 
   esp_err_t err = ESP_OK;
 
+  size_t psram_size = esp_psram_get_size();
+  printf("PSRAM size: %d bytes\n", psram_size);
+
   ESP_ERROR_CHECK(gpio_set_direction(BOARD_POWER_PIN, GPIO_MODE_OUTPUT));
   ESP_ERROR_CHECK(gpio_set_level(BOARD_POWER_PIN, 1));
 
-  ESP_ERROR_CHECK(gpio_set_direction(BOARD_EN_PIN, GPIO_MODE_OUTPUT));
-  ESP_ERROR_CHECK(gpio_set_level(BOARD_EN_PIN, 1));
+  //ESP_ERROR_CHECK(gpio_set_direction(BOARD_EN_PIN, GPIO_MODE_OUTPUT));
+  //ESP_ERROR_CHECK(gpio_set_level(BOARD_EN_PIN, 1));
 
   ESP_ERROR_CHECK(gpio_set_direction(BOARD_SDCARD_CS_PIN, GPIO_MODE_OUTPUT));
   ESP_ERROR_CHECK(gpio_set_level(BOARD_SDCARD_CS_PIN, 1));

@@ -43,8 +43,8 @@ esp_err_t td_sdcard_init(void *ctx, const char *mount_point) {
   spi_device_handle_t handle;
   esp_err_t ret = spi_bus_add_device(BOARD_SPI, &sdspi_config, &handle);
 
-  bzero(SDCard->mount_point, STR_SIZE_MEDIUM);
-  strncpy(SDCard->mount_point, mount_point, STR_SIZE_MEDIUM - 1);
+  bzero((char*)SDCard->mount_point, STR_SIZE_MEDIUM);
+  strncpy((char*)SDCard->mount_point, mount_point, STR_SIZE_MEDIUM - 1);
 
   if (ret != ESP_OK) {
     return ret;
