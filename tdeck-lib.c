@@ -125,5 +125,13 @@ esp_err_t td_board_init(td_board_t **Board, td_board_peripherals peripherals) {
     }
   }
 
+  if (peripherals & INIT_GPS) {
+    err = td_gps_init(*Board);
+    if(err != ESP_OK){
+      ESP_LOGE(TAG, "GPS initialisation error: %s", esp_err_to_name(err));
+      return ESP_FAIL;
+    }
+  }
+
   return ESP_OK;
 }

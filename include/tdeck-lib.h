@@ -9,6 +9,7 @@
 #include <speaker.h>
 #include <sdcard.h>
 #include <audio.h>
+#include <gps.h>
 
 esp_err_t td_board_init(td_board_t **Board, td_board_peripherals peripherals);
 
