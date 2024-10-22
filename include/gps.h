@@ -4,7 +4,7 @@
 #include "driver/uart.h"
 #include "esp_log.h"
 #include "esp_err.h"
-
+#include "freertos/queue.h"
 #define MAX_PAYLOAD	256
 typedef struct {
 	uint16_t command;
@@ -87,7 +87,7 @@ typedef struct td_gps_t {
 
 esp_err_t td_gps_init(void *ctx);
 void td_gps_sendcmd(void *ctx, char *cmd);
-
+void td_nmea_task(void *ctx);
 void td_gps_task(void *pvParameters);
 
 #endif /* end of include guard: _GPS_H_ */

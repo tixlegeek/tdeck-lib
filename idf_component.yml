@@ -1,5 +1,6 @@
 ## IDF Component Manager Manifest File
 dependencies:
+  igrr/libnmea: "^0.1.0"
   chmorgan/esp-libhelix-mp3: "^1.0.3"
   chmorgan/esp-audio-player: "*"
   ## Required IDF version
