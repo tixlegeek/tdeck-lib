@@ -10,6 +10,8 @@
 #include <trackball.h>
 #include <audio.h>
 #include <gps.h>
+#include <wifi.h>
+#include <jsonconfig.h>
 
 typedef enum {
   INIT_SDCARD = (1<<0),
@@ -20,6 +22,8 @@ typedef enum {
   INIT_BATTERY = (1<<5),
   INIT_AUDIO = (1<<6),
   INIT_GPS = (1<<7),
+  INIT_CONFIG = (1<<8),
+  INIT_WIFI = (1<<9)
 } td_board_peripherals;
 
 typedef struct td_board_t {
@@ -30,7 +34,8 @@ typedef struct td_board_t {
   td_speaker_t *Speaker;
   td_sdcard_t *SDCard;
   td_gps_t *Gps;
-
+  td_config_t *Config;
+  td_wifi_t *Wifi;
   struct {
     struct {
       i2c_master_bus_handle_t host;
@@ -48,6 +53,12 @@ typedef struct td_board_t {
 #define BOARD_SDCARD_CLOCK_SPEED 50000
 
 #define BOARD_RADIO_CS_PIN 9
+#define BOARD_RADIO_RST_PIN 17
+#define BOARD_RADIO_DIO_PIN 45
+#define BOARD_RADIO_BUSY_PIN 13
+#define BOARD_RADIO_P101_PIN 2
+
+
 
 #define BOARD_I2C_SDA_PIN 18
 #define BOARD_I2C_SCL_PIN 8
@@ -98,4 +109,7 @@ typedef struct td_board_t {
 #define BOARD_GPS_RX_PIN 44
 #define BOARD_GPS_BAUDRATE 38400
 #define BOARD_GPS_PORT_NUM UART_NUM_2
+
+#define BOARD_CONFIG_FILE  BOARD_SDCARD_MOUNT_POINT"/config.json"
+
 #endif /* end of include guard: _BOARD_H_ */

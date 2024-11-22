@@ -10,8 +10,9 @@
 #include <sdcard.h>
 #include <audio.h>
 #include <gps.h>
+#include <jsonconfig.h>
 
-esp_err_t td_board_init(td_board_t **Board, td_board_peripherals peripherals);
+td_board_peripherals td_board_init(td_board_t **Board, td_board_peripherals peripherals);
 
 #endif
 /* end of include guard:  _TDECK_LIB_H_ */

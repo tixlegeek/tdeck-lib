@@ -33,7 +33,7 @@ esp_err_t td_board_i2c_init(td_board_t *Board) {
   return i2c_new_master_bus(&bus_config, &Board->proto.i2c.host);
 }
 
-esp_err_t td_board_init(td_board_t **Board, td_board_peripherals peripherals) {
+td_board_peripherals td_board_init(td_board_t **Board, td_board_peripherals peripherals) {
 
   if(*Board != NULL){
       ESP_LOGW(TAG, "Already initialized");
@@ -46,15 +46,13 @@ esp_err_t td_board_init(td_board_t **Board, td_board_peripherals peripherals) {
   }
 
   esp_err_t err = ESP_OK;
+  td_board_peripherals initialized_peripherals = 0;
 
-  size_t psram_size = esp_psram_get_size();
-  printf("PSRAM size: %d bytes\n", psram_size);
+  /*size_t psram_size = esp_psram_get_size();
+  printf("PSRAM size: %d bytes\n", psram_size);*/
 
   ESP_ERROR_CHECK(gpio_set_direction(BOARD_POWER_PIN, GPIO_MODE_OUTPUT));
   ESP_ERROR_CHECK(gpio_set_level(BOARD_POWER_PIN, 1));
-
-  //ESP_ERROR_CHECK(gpio_set_direction(BOARD_EN_PIN, GPIO_MODE_OUTPUT));
-  //ESP_ERROR_CHECK(gpio_set_level(BOARD_EN_PIN, 1));
 
   ESP_ERROR_CHECK(gpio_set_direction(BOARD_SDCARD_CS_PIN, GPIO_MODE_OUTPUT));
   ESP_ERROR_CHECK(gpio_set_level(BOARD_SDCARD_CS_PIN, 1));
@@ -75,6 +73,7 @@ esp_err_t td_board_init(td_board_t **Board, td_board_peripherals peripherals) {
             ESP_LOGE(TAG, "Battery initialisation error: %s", esp_err_to_name(err));
       return ESP_FAIL;
     }
+    initialized_peripherals |= INIT_BATTERY;
   }
 
   if (peripherals & INIT_DISPLAY) {
@@ -83,6 +82,7 @@ esp_err_t td_board_init(td_board_t **Board, td_board_peripherals peripherals) {
             ESP_LOGE(TAG, "Display initialisation error: %s", esp_err_to_name(err));
       return ESP_FAIL;
     }
+    initialized_peripherals |= INIT_DISPLAY;
   }
 
   if (peripherals & INIT_SDCARD) {
@@ -91,14 +91,16 @@ esp_err_t td_board_init(td_board_t **Board, td_board_peripherals peripherals) {
       ESP_LOGE(TAG, "SDCard initialisation error: %s", esp_err_to_name(err));
       return ESP_FAIL;
     }
-      err = sdcard_mount(*Board, BOARD_SDCARD_MOUNT_POINT);
-      if (err != ESP_OK) {
-        //*Board->SDCard.mounted = false;
-        ESP_LOGE(TAG, "SDCard not mounted. Err: %s", esp_err_to_name(err));
-      } else {
-        //*Board->SDCard.mounted = true;
-        ESP_LOGI(TAG, "SDCard mounted on \"%s\"", BOARD_SDCARD_MOUNT_POINT);
-      }
+
+    err = sdcard_mount(*Board, BOARD_SDCARD_MOUNT_POINT);
+    if (err != ESP_OK) {
+      //*Board->SDCard.mounted = false;
+      ESP_LOGE(TAG, "SDCard not mounted. Err: %s", esp_err_to_name(err));
+    } else {
+      //*Board->SDCard.mounted = true;
+      ESP_LOGI(TAG, "SDCard mounted on \"%s\"", BOARD_SDCARD_MOUNT_POINT);
+      initialized_peripherals |= INIT_SDCARD;
+    }
   }
 
   if (peripherals & INIT_KEYBOARD) {
@@ -107,6 +109,7 @@ esp_err_t td_board_init(td_board_t **Board, td_board_peripherals peripherals) {
       ESP_LOGE(TAG, "Keyboard initialisation error: %s", esp_err_to_name(err));
       return ESP_FAIL;
     }
+    initialized_peripherals |= INIT_KEYBOARD;
   }
 
   if (peripherals & INIT_SPEAKER) {
@@ -115,6 +118,7 @@ esp_err_t td_board_init(td_board_t **Board, td_board_peripherals peripherals) {
       ESP_LOGE(TAG, "Speaker initialisation error: %s", esp_err_to_name(err));
       return ESP_FAIL;
     }
+    initialized_peripherals |= INIT_SPEAKER;
   }
 
   if (peripherals & INIT_TRACKBALL) {
@@ -123,6 +127,7 @@ esp_err_t td_board_init(td_board_t **Board, td_board_peripherals peripherals) {
       ESP_LOGE(TAG, "Trackball initialisation error: %s", esp_err_to_name(err));
       return ESP_FAIL;
     }
+    initialized_peripherals |= INIT_TRACKBALL;
   }
 
   if (peripherals & INIT_GPS) {
@@ -131,7 +136,46 @@ esp_err_t td_board_init(td_board_t **Board, td_board_peripherals peripherals) {
       ESP_LOGE(TAG, "GPS initialisation error: %s", esp_err_to_name(err));
       return ESP_FAIL;
     }
+    initialized_peripherals |= INIT_GPS;
   }
 
-  return ESP_OK;
+  if ((peripherals & INIT_CONFIG) && (initialized_peripherals & INIT_SDCARD)) {
+    err = td_config_init(*Board);
+    initialized_peripherals &= ~INIT_CONFIG;
+    if(err != ESP_OK){
+      ESP_LOGE(TAG, "Config initialisation error: %s", esp_err_to_name(err));
+      return ESP_FAIL;
+    }
+    ESP_LOGI(TAG,"Config initialized.");
+    td_config_t *Config = (*Board)->Config;
+    if (td_config_load(BOARD_SDCARD_MOUNT_POINT "/config.json", Config) != ESP_OK) {
+      ESP_LOGE(TAG,"Could not load config, rollback on default.");
+      if(td_config_default(Config)!=ESP_OK){
+        ESP_LOGE(TAG,"Could not load rollback default.");
+      }
+      else{
+        if(td_config_save(BOARD_SDCARD_MOUNT_POINT "/config.json", Config)!=ESP_OK){
+          ESP_LOGE(TAG,"Could not save default.");
+        }
+        else {
+          initialized_peripherals |= INIT_CONFIG;
+        }
+      }
+    }
+    else  {
+      ESP_LOGI(TAG,"Config loaded.");
+      initialized_peripherals |= INIT_CONFIG;
+    }
+  }
+
+  if ((peripherals & INIT_WIFI) && (initialized_peripherals & INIT_CONFIG)) {
+    err = td_wifi_init(*Board);
+    if(err != ESP_OK){
+      ESP_LOGE(TAG, "Config initialisation error: %s", esp_err_to_name(err));
+      return ESP_FAIL;
+    }
+    initialized_peripherals |= INIT_WIFI;
+  }
+
+  return initialized_peripherals;
 }

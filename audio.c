@@ -28,6 +28,7 @@ static esp_err_t audio_mute_function(AUDIO_PLAYER_MUTE_SETTING setting) {
   return ESP_OK;
 }
 
+// Mon comptable rêve de bible et de gros chiffres
 
 static audio_player_callback_event_t expected_event;
 static QueueHandle_t event_queue;
